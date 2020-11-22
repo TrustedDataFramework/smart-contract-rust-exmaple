@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script src="../node_modules/@salaku/js-sdk/dist/bundle.js"></script>
+    <script>
+        const t = tdsSDK
+        const vm = new t.VirtualMachine()  
+        vm.hosts.set('__log', console.log)
+        vm.hosts.set('_nop', () => undefined)
+        const origin = '9cbf30db111483e4b84e77ca0e39378fd7605e1b'
+        const amount = 1234567890
+        vm.alloc(origin, 0xff + 0xff)
+        async function main() {
+            const contractAddress = t.getContractAddress(origin, 1)
+            await vm.deploy(origin, '../pkg/hello_wasm_bg.wasm', 'hello world ddddd', 0xff)
+            console.log(await vm.call(origin, contractAddress, 'concat_world', 'hello '))
+        }
+
+        main().catch(console.error)        
+    </script>
+</body>
+</html>

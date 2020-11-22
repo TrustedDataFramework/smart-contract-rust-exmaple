@@ -18,8 +18,9 @@ wasm-pack build --target  web --no-typescript
 2. 运行
 
 ```shell script
-echo  '[{"name":"init","type":"function","inputs":[{"name":"s","type":"string"}],"outputs":[]}]' >> ./pkg/hello_wasm_bg.abi.json
+# 手动构造 abi
+echo  '[{"name":"init","type":"function","inputs":[],"outputs":[]},{"name":"concat_world","type":"function","inputs":[{"name":"s","type":"string"}],"outputs":[{"type":"string"}]}]' >> ./pkg/hello_wasm_bg.abi.json
 light-server -s .
 ```
 
-打开 localhost:4000/pkg/index.html
+打开 localhost:4000/tests/index.html
