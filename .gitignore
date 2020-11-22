@@ -1,0 +1,12 @@
+/target
+**/*.rs.bk
+Cargo.lock
+bin/
+pkg/
+wasm-pack.log
+!pkg/index.html
+!pkg/hello_wasm_bg.abi.json
+node_modules
+.idea
+package-lock.json
+.DS_Store
