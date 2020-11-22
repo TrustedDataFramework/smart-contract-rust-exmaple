@@ -18,6 +18,7 @@ wasm-pack build --target  web --no-typescript
 2. 运行
 
 ```shell script
+echo  '[{"name":"init","type":"function","inputs":[{"name":"s","type":"string"}],"outputs":[]}]' >> ./pkg/hello_wasm_bg.abi.json
 light-server -s .
 ```
 
