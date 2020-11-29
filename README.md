@@ -19,7 +19,7 @@ wasm-pack build --target  web --no-typescript
 
 ```shell script
 # 手动构造 abi
-echo  '[{"name":"init","type":"function","inputs":[],"outputs":[]},{"name":"concat_world","type":"function","inputs":[{"name":"s","type":"string"}],"outputs":[{"type":"string"}]}]' >> ./pkg/hello_wasm_bg.abi.json
+echo '[{"name":"init","type":"function","inputs":[{"name":"a","type":"string"},{"name":"b","type":"string"}],"outputs":[{"type":"string"}]},{"name":"concat_world","type":"function","inputs":[{"name":"s","type":"string"}],"outputs":[{"type":"string"}]}]' >> ./pkg/hello_wasm_bg.abi.json
 light-server -s .
 ```
 
