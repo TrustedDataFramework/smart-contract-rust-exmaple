@@ -1,6 +1,7 @@
 #![allow(dead_code)]
 #![allow(non_camel_case_types)]
 
+// 本质上 Box<String> 和 &String 是一样的
 extern "C" {
     pub fn _log(a: u64);
     pub fn __log(a: u64);
@@ -24,18 +25,13 @@ pub fn ret<T>(d: T) -> *mut T {
 pub unsafe fn __malloc(size: u64) -> u64 {
     let mut bytes: Vec<u8> = Vec::with_capacity(size as usize);
     bytes.set_len(size as usize);
-    bytes.as_ptr() as u64
+    bytes.leak().as_ptr() as u64
 }
 
 #[no_mangle]
 pub unsafe fn __change_t(t: u64, ptr: u64, size: u64) -> u64{
-    let p = ptr as *const u8;
-    let mut bytes: Vec<u8> = Vec::with_capacity(size as usize);
-    bytes.set_len(size as usize);
-    for i in 0..size {
-        bytes[i as usize] = *(p.offset(i as isize));
-    }
-    let s = String::from_utf8_unchecked(bytes);
+    let v: Vec<u8> = Vec::from_raw_parts(ptr as *mut _, size as usize, size as usize);
+    let s = String::from_utf8_unchecked(v);
     ret(s) as u64
 }
 
