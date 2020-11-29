@@ -19,7 +19,92 @@ wasm-pack build --target  web --no-typescript
 
 ```shell script
 # 手动构造 abi
-echo '[{"name":"init","type":"function","inputs":[{"name":"a","type":"string"},{"name":"b","type":"string"}],"outputs":[{"type":"string"}]},{"name":"concat_world","type":"function","inputs":[{"name":"s","type":"string"}],"outputs":[{"type":"string"}]}]' >> ./pkg/hello_wasm_bg.abi.json
+vim ./pkg/hello_wasm_bg.abi.json
+```
+
+填充如下内容
+
+```json
+[
+  {
+    "name": "init",
+    "type": "function",
+    "inputs": [
+      {
+        "name": "a",
+        "type": "string"
+      },
+      {
+        "name": "b",
+        "type": "string"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "string"
+      }
+    ]
+  },
+  {
+    "name": "echo0",
+    "type": "function",
+    "inputs": [
+      {
+        "type": "bytes"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "bytes"
+      }
+    ]
+  },
+  {
+    "name": "echo1",
+    "type": "function",
+    "inputs": [
+      {
+        "type": "address"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "address"
+      }
+    ]
+  },
+  {
+    "name": "echo2",
+    "type": "function",
+    "inputs": [
+      {
+        "type": "u256"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "u256"
+      }
+    ]
+  },
+  {
+    "name": "balance",
+    "type": "function",
+    "inputs": [
+      {
+        "type": "address"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "u256"
+      }
+    ]
+  }
+]
+```
+
+```shell script
 light-server -s .
 ```
 

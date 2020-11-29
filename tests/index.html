@@ -16,9 +16,21 @@
         const amount = 1234567890
         vm.alloc(origin, 0xff + 0xff)
         async function main() {
-            // const contractAddress = t.getContractAddress(origin, 1)
-            console.log((await vm.deploy(origin, '../pkg/hello_wasm_bg.wasm', ["hello", " world"])).result);
-            // console.log(await vm.call(origin, contractAddress, 'concat_world', 'hello '))
+            const contractAddress = t.getContractAddress(origin, 1)
+            console.log((await vm.deploy(origin, '../pkg/hello_wasm_bg.wasm', ["hello", " world"], 123, {
+                version: 1234,
+                createdAt: 12345,
+                gasLimit: 12345678,
+                gasPrice: 123456789,
+                to: '9cbf30db111483e4b84e77ca0e39378fd7605e1b',
+                signature: '9cbf30db111483e4b84e77ca0e39378fd7605e1b',
+                hash: '9cbf30db111483e4b84e77ca0e39378fd7605e1b'
+            })).result);
+            console.log((await vm.call(origin, contractAddress, 'echo0', 'ffff')).result);
+            console.log((await vm.call(origin, contractAddress, 'echo1', '9cbf30db111483e4b84e77ca0e39378fd7605e1b')).result);
+            console.log((await vm.call(origin, contractAddress, 'echo2', '123456789876543210')).result);
+            console.log((await vm.call(origin, contractAddress, 'balance', origin)).result);
+
         }
         main().catch(console.error)        
     </script>
