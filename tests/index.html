@@ -16,11 +16,10 @@
         const amount = 1234567890
         vm.alloc(origin, 0xff + 0xff)
         async function main() {
-            const contractAddress = t.getContractAddress(origin, 1)
-            await vm.deploy(origin, '../pkg/hello_wasm_bg.wasm', 'hello world ddddd', 0xff)
-            console.log(await vm.call(origin, contractAddress, 'concat_world', 'hello '))
+            // const contractAddress = t.getContractAddress(origin, 1)
+            console.log((await vm.deploy(origin, '../pkg/hello_wasm_bg.wasm', ["hello", " world"])).result);
+            // console.log(await vm.call(origin, contractAddress, 'concat_world', 'hello '))
         }
-
         main().catch(console.error)        
     </script>
 </body>
