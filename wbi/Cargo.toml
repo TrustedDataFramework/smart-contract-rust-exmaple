@@ -1,16 +1,15 @@
 [package]
-name = "hello-wasm"
+name = "wbi"
 version = "0.1.0"
 authors = ["zhuyingjie <m6567fc@outlook.com>"]
 edition = "2018"
 
-[lib]
-crate-type = ["cdylib", "rlib"]
+
 
 [features]
 
 [dependencies]
-wbi =  { path = "./wbi" }
+
 # `wee_alloc` is a tiny allocator for wasm that is only ~1K in code size
 # compared to the default allocator's ~10K. It is slower than the default
 # allocator, however.
@@ -18,14 +17,3 @@ wbi =  { path = "./wbi" }
 # Unfortunately, `wee_alloc` requires nightly Rust when targeting wasm for now.
 wee_alloc = "0.4.5"
 
-[dev-dependencies]
-
-[profile.release]
-# Tell `rustc` to optimize for small code size.
-opt-level = "s"
-
-[workspace]
-members = [
-    '.',
-    'wbi'
-]

@@ -11,8 +11,8 @@
   },
   "author": "",
   "license": "ISC",
-  "dependencies": {
-    "@salaku/js-sdk": "^1.2.12",
+  "devDependencies": {
+    "@tdos/js-sdk": "0.0.4",
     "light-server": "^2.9.1"
   }
 }

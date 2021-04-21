@@ -6,7 +6,7 @@
     <title>Document</title>
 </head>
 <body>
-    <script src="../node_modules/@salaku/js-sdk/dist/bundle.js"></script>
+    <script src="../node_modules/@tdos/js-sdk/dist/bundle.js"></script>
     <script>
         const t = tdsSDK
         const vm = new t.VirtualMachine()  
@@ -17,7 +17,7 @@
         vm.alloc(origin, 0xff + 0xff)
         async function main() {
             const contractAddress = t.getContractAddress(origin, 1)
-            console.log((await vm.deploy(origin, '../pkg/hello_wasm_bg.wasm', ["hello", " world"], 123, {
+            console.log((await vm.deploy(origin, '../target/wasm32-unknown-unknown/debug/hello_wasm.wasm', ["hello", " world", "ff0a"], 123, {
                 version: 1234,
                 createdAt: 12345,
                 gasLimit: 12345678,
@@ -26,11 +26,6 @@
                 signature: '9cbf30db111483e4b84e77ca0e39378fd7605e1b',
                 hash: '9cbf30db111483e4b84e77ca0e39378fd7605e1b'
             })).result);
-            console.log((await vm.call(origin, contractAddress, 'echo0', 'ffff')).result);
-            console.log((await vm.call(origin, contractAddress, 'echo1', '9cbf30db111483e4b84e77ca0e39378fd7605e1b')).result);
-            console.log((await vm.call(origin, contractAddress, 'echo2', '123456789876543210')).result);
-            console.log((await vm.call(origin, contractAddress, 'balance', origin)).result);
-
         }
         main().catch(console.error)        
     </script>
