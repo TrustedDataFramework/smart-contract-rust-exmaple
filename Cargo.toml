@@ -17,12 +17,15 @@ wbi =  { path = "./wbi" }
 #
 # Unfortunately, `wee_alloc` requires nightly Rust when targeting wasm for now.
 wee_alloc = "0.4.5"
-
+hex = { version = "0.4.3", default-features = false }
+rlp = { version = "0.5.0", default-features = false }
+rlp-derive = { version = "0.1.0", default-features = false }
 [dev-dependencies]
 
 [profile.release]
 # Tell `rustc` to optimize for small code size.
-opt-level = "s"
+opt-level = "z"
+lto = true
 
 [workspace]
 members = [
