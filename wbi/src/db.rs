@@ -1,5 +1,61 @@
 use alloc::vec::Vec;
 use crate::{forget, remember};
+use alloc::string::*;
+use core::marker::PhantomData;
+
+pub struct Store<K, V> {
+    prefix: String,
+    phantom_0: PhantomData<K>,
+    phantom_1: PhantomData<V>,
+}
+
+macro_rules! concat {
+    ($l: expr, $r: expr) => {
+        {
+            let mut v = Vec::with_capacity($l.len() + $r.len());
+            v.extend_from_slice($l);
+            v.extend_from_slice($r);
+            v
+        }
+    };
+}
+impl<K: rlp::Encodable + rlp::Decodable, V: rlp::Encodable + rlp::Decodable> Store<K, V> {
+    pub fn new(s: String) -> Store<K, V> {
+        Store {
+            prefix: s,
+            phantom_0: PhantomData::default(),
+            phantom_1: PhantomData::default(),
+        }
+    }
+
+    pub fn get(&self, key: &K) -> Option<V> {
+        let encoded = rlp::encode(key);
+        let k = concat!(&encoded, self.prefix.as_bytes());
+        get(&k)
+            .map(
+                |x| rlp::decode(&x).unwrap()
+            )
+    }
+
+    pub fn contains_key(&self, key: &K) -> bool {
+        let k = concat!(&rlp::encode(key), self.prefix.as_bytes());
+        contains_key(&k)
+    }
+
+
+    pub fn insert(&self, key: &K, val: V) {
+        let encoded = rlp::encode(key);
+        let k = concat!(&encoded, self.prefix.as_bytes());
+        insert(&k, &rlp::encode(&val));
+    }
+
+    pub fn remove(&self, key: &K) {
+        let encoded = rlp::encode(key);
+        let k = concat!(&encoded, self.prefix.as_bytes());
+        remove(&k)
+    }    
+}
+
 
 
 // get vector from fat pointer
@@ -15,6 +71,23 @@ macro_rules! to_vec {
 enum Op {
     SET = 0, GET = 1, REMOVE = 2, HAS = 3
 }
+
+pub struct Globals;
+
+impl Globals {
+    pub fn get<V: rlp::Decodable>(name: &str) -> Option<V> {
+        get(name.as_bytes())
+        .map(
+            |x| rlp::decode(&x).unwrap()
+        )   
+    }
+    
+    pub fn insert<V: rlp::Encodable>(key: &str, value: &V) {
+        insert(key.as_bytes(), &rlp::encode(value))        
+    }
+}
+
+
 
 pub fn insert(key: &[u8], value: &[u8]) {
     let k = to_vec!(key);

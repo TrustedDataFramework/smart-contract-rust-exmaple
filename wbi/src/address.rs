@@ -1,8 +1,39 @@
 use alloc::vec::Vec;
 use crate::remember_bytes;
+
+const ADDRESS_SIZE: usize = 20;
+
 #[derive(Eq)]
 pub struct Address {
     data: Vec<u8>
+}
+
+impl Default for Address {
+    fn default() -> Address {
+        Address {
+            data: vec![0u8; ADDRESS_SIZE]
+        }
+    }
+}
+
+
+impl rlp::Decodable for Address {
+    fn decode(rlp: &rlp::Rlp) -> Result<Self, rlp::DecoderError> {
+        // 1. shouldn't starts with zero
+		rlp.decoder().decode_value(|bytes| {
+			if bytes.len() != ADDRESS_SIZE{
+                return Err(rlp::DecoderError::Custom("invalid address size"));
+            }
+       
+            return Ok(Address::new(bytes.to_vec()))
+		})        
+    }
+}
+
+impl rlp::Encodable for Address {
+    fn rlp_append(&self, s: &mut rlp::RlpStream) {
+        s.encoder().encode_value(&self.data);
+    }
 }
 
 impl PartialEq for Address {

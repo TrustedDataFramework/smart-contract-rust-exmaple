@@ -13,6 +13,9 @@ use alloc::string::*;
 extern crate hex;
 extern crate rlp_derive;
 
+#[macro_use]
+extern crate lazy_static;
+
 extern "C" {
     pub fn __log(a: u64); 
 }
@@ -23,9 +26,11 @@ fn log_u64(x: u64) {
     }
 }
 
+mod persist;
 mod types;
 
 use hex::ToHex;
+use lazy_static::lazy_static;
 pub use wbi::{__change_t, __malloc, __peek, log, ret};
 use wbi::db;
 use wbi::{Address, U256 };

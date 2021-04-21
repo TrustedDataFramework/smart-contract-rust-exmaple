@@ -7,8 +7,6 @@ edition = "2018"
 [lib]
 crate-type = ["cdylib", "rlib"]
 
-[features]
-
 [dependencies]
 wbi =  { path = "./wbi" }
 # `wee_alloc` is a tiny allocator for wasm that is only ~1K in code size
@@ -20,7 +18,9 @@ wee_alloc = "0.4.5"
 hex = { version = "0.4.3", default-features = false }
 rlp = { version = "0.5.0", default-features = false }
 rlp-derive = { version = "0.1.0", default-features = false }
+lazy_static = { version = "1.4.0", features = ["spin_no_std"]}
 [dev-dependencies]
+
 
 [profile.release]
 # Tell `rustc` to optimize for small code size.

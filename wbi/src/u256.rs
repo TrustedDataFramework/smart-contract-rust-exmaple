@@ -10,6 +10,12 @@ extern "C" {
     pub fn _u256(op: u64, left: u64, right: u64) -> u64;
 }
 
+impl Default for U256 {
+    fn default() -> U256 {
+        U256::zero()
+    }
+}
+
 impl FromStr for U256 {
     type Err = &'static str;
 
