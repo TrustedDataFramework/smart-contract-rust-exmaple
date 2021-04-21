@@ -28,6 +28,7 @@ fn log_u64(x: u64) {
 
 mod persist;
 mod types;
+mod utils;
 
 use hex::ToHex;
 use lazy_static::lazy_static;
@@ -35,14 +36,14 @@ pub use wbi::{__change_t, __malloc, __peek, log, ret};
 use wbi::db;
 use wbi::{Address, U256 };
 use wbi::context;
+use utils::RayMath;
 
 #[no_mangle]
 pub fn init(a: Address, b: &U256) -> &'static U256{
-    panic!("paniccccc");
-    let s = "314159265358979323846264338327950288419716939937510";
+    let r = RayMath::half_ray();
+    let s = utils::decimal(r, 27);
+    log(&s);
 
-    let n: U256 = s.parse().unwrap();
-    log(&n.to_string());
     ret(U256::one())
 }
 

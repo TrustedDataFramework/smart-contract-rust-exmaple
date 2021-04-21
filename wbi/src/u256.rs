@@ -135,73 +135,64 @@ impl ToString for U256 {
     }
 }
 
+macro_rules! impl_op {
+    ($tr: ident, $fn: ident, $op: expr) => {
+        impl<'a> $tr for &'a U256 {
+            type Output = U256;    
+        
+            fn $fn(self, rhs: &'a U256) -> U256 {
+                let l = self.raw_clone();
+                let r = rhs.raw_clone();       
+                let o = unsafe {
+                    _u256($op as u64, forget(l) as u64, forget(r) as u64)
+                };
+                remember(o)
+            }
+        }
 
-impl<'a> Add for &'a U256 {
-    type Output = U256;    
-
-    fn add(self, rhs: &'a U256) -> U256 {
-        let l = self.raw_clone();
-        let r = rhs.raw_clone();       
-        let o = unsafe {
-            _u256(Op::SUM as u64, forget(l) as u64, forget(r) as u64)
-        };
-        remember(o)
-    }
+        impl<'a> $tr<U256> for &'a U256 {
+            type Output = U256;    
+        
+            fn $fn(self, rhs: U256) -> U256 {
+                let l = self.raw_clone();
+                let o = unsafe {
+                    _u256($op as u64, forget(l) as u64, forget(rhs) as u64)
+                };
+                remember(o)
+            }
+        }        
+        
+        impl<'a> $tr<&'a U256> for U256 {
+            type Output = U256;  
+        
+            fn $fn(self, rhs: &'a U256) -> U256 {
+                let r = rhs.raw_clone();       
+                let o = unsafe {
+                    _u256($op as u64, forget(self) as u64, forget(r) as u64)
+                };
+                remember(o)
+            }
+        }     
+        
+        impl $tr for U256 {
+            type Output = U256;  
+        
+            fn $fn(self, rhs: U256) -> U256 {
+                let o = unsafe {
+                    _u256($op as u64, forget(self) as u64, forget(rhs) as u64)
+                };
+                remember(o)
+            }
+        }          
+    };
 }
 
-impl<'a> Sub for &'a U256 {
-    type Output = U256;
+impl_op!(Add, add, Op::SUM);
+impl_op!(Sub, sub, Op::SUB);
+impl_op!(Mul, mul, Op::MUL);
+impl_op!(Div, div, Op::DIV);
+impl_op!(Rem, rem, Op::MOD);
 
-    fn sub(self, rhs: &'a U256) -> U256 {
-        let l = self.raw_clone();
-        let r = rhs.raw_clone();   
-
-        let o = unsafe {
-            _u256(Op::SUB as u64, forget(l) as u64, forget(r) as u64)
-        };
-        remember(o)
-    }
-}
-
-impl<'a> Mul for &'a U256 {
-    type Output = U256;
-
-    fn mul(self, rhs: &'a U256) -> U256 {
-        let l = self.raw_clone();
-        let r = rhs.raw_clone();
-        let o = unsafe {
-            _u256(Op::MUL as u64, forget(l) as u64, forget(r) as u64)
-        };
-        remember(o)
-    }
-}
-
-impl<'a> Div for &'a U256 {
-    type Output = U256;
-
-    fn div(self, rhs: &'a U256) -> U256 {
-        let l = self.raw_clone();
-        let r = rhs.raw_clone();
-        let o = unsafe {
-            _u256(Op::DIV as u64, forget(l) as u64, forget(r) as u64)
-        };
-        remember(o)
-    }
-}
-
-
-impl<'a> Rem for &'a U256 {
-    type Output = U256;
-
-    fn rem(self, rhs: &'a U256) -> U256 {
-        let l = self.raw_clone();
-        let r = rhs.raw_clone();
-        let o = unsafe {
-            _u256(Op::MOD as u64, forget(l) as u64, forget(r) as u64)
-        };
-        remember(o)
-    }
-}
 
 impl From<u64> for U256 {
     fn from(o: u64) -> U256 {
@@ -230,6 +221,21 @@ impl U256 {
         U256 {
             data: v
         }
+    }
+
+    pub fn max() -> U256 {
+        U256 {
+            data: vec![0xffu8; 32]
+        }
+    }
+
+    pub fn pow(&self, o: u64) -> U256 {
+        let mut ret = U256::one();
+    
+        for _ in 0..o{
+            ret = &ret * self
+        }
+        ret      
     }
 
     pub fn new(v: Vec<u8>) -> U256 {
