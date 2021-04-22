@@ -47,7 +47,7 @@ impl rlp::Decodable for U256 {
         // 1. shouldn't starts with zero
 		rlp.decoder().decode_value(|bytes| {
 			for i in bytes.iter() {
-                if *i == 0 {
+                if *i != 0 {
                     break;
                 } else {
                     return Err(rlp::DecoderError::RlpDataLenWithZeroPrefix)
@@ -135,18 +135,23 @@ impl ToString for U256 {
     }
 }
 
+// overflow check
 macro_rules! impl_op {
-    ($tr: ident, $fn: ident, $op: expr) => {
+    ($tr: ident, $fn: ident, $op: expr, $overflow: ident) => {
         impl<'a> $tr for &'a U256 {
             type Output = U256;    
         
             fn $fn(self, rhs: &'a U256) -> U256 {
                 let l = self.raw_clone();
                 let r = rhs.raw_clone();       
-                let o = unsafe {
+                let p = unsafe {
                     _u256($op as u64, forget(l) as u64, forget(r) as u64)
                 };
-                remember(o)
+                let o: U256 = remember(p);
+                if $overflow(self, rhs, &o) {
+                    panic!("math overflow for op {}", $op as u8);
+                }
+                o
             }
         }
 
@@ -155,10 +160,15 @@ macro_rules! impl_op {
         
             fn $fn(self, rhs: U256) -> U256 {
                 let l = self.raw_clone();
-                let o = unsafe {
-                    _u256($op as u64, forget(l) as u64, forget(rhs) as u64)
+                let r = rhs.raw_clone();  
+                let p = unsafe {
+                    _u256($op as u64, forget(l) as u64, forget(r) as u64)
                 };
-                remember(o)
+                let o = remember(p);
+                if $overflow(self, &rhs, &o) {
+                    panic!("math overflow for op {}", $op as u8);
+                }                
+                o
             }
         }        
         
@@ -166,11 +176,16 @@ macro_rules! impl_op {
             type Output = U256;  
         
             fn $fn(self, rhs: &'a U256) -> U256 {
+                let l = self.raw_clone();
                 let r = rhs.raw_clone();       
-                let o = unsafe {
-                    _u256($op as u64, forget(self) as u64, forget(r) as u64)
+                let p = unsafe {
+                    _u256($op as u64, forget(l) as u64, forget(r) as u64)
                 };
-                remember(o)
+                let o: U256 = remember(p);
+                if $overflow(&self, rhs, &o) {
+                    panic!("math overflow for op {}", $op as u8);
+                }                   
+                o
             }
         }     
         
@@ -178,20 +193,46 @@ macro_rules! impl_op {
             type Output = U256;  
         
             fn $fn(self, rhs: U256) -> U256 {
-                let o = unsafe {
-                    _u256($op as u64, forget(self) as u64, forget(rhs) as u64)
+                let l = self.raw_clone();
+                let r = rhs.raw_clone();                   
+                let p = unsafe {
+                    _u256($op as u64, forget(l) as u64, forget(r) as u64)
                 };
-                remember(o)
+                let o: U256 = remember(p);
+                if $overflow(&self, &rhs, &o) {
+                    panic!("math overflow for op {}", $op as u8);
+                }                   
+                o
             }
         }          
     };
 }
 
-impl_op!(Add, add, Op::SUM);
-impl_op!(Sub, sub, Op::SUB);
-impl_op!(Mul, mul, Op::MUL);
-impl_op!(Div, div, Op::DIV);
-impl_op!(Rem, rem, Op::MOD);
+fn add_over_flow(left: &U256, right: &U256, out: &U256) -> bool {
+    out < left || out < right
+}
+
+fn sub_over_flow(left: &U256, right: &U256, out: &U256) -> bool {
+    right > left
+}
+
+fn mul_over_flow(left: &U256, right: &U256, out: &U256) -> bool {
+    if left.is_zero() {
+        false
+    } else {
+        &(out / left) != right
+    }
+}
+
+fn div_over_flow(left: &U256, right: &U256, out: &U256) -> bool {
+    right.is_zero()
+}
+
+impl_op!(Add, add, Op::SUM, add_over_flow);
+impl_op!(Sub, sub, Op::SUB, sub_over_flow);
+impl_op!(Mul, mul, Op::MUL, mul_over_flow);
+impl_op!(Div, div, Op::DIV, div_over_flow);
+impl_op!(Rem, rem, Op::MOD, div_over_flow);
 
 
 impl From<u64> for U256 {

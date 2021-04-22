@@ -4,6 +4,9 @@ extern crate alloc;
 extern crate core;
 extern crate rlp;
 
+#[macro_use]
+extern crate lazy_static;
+
 mod u256;
 mod address;
 pub mod db;

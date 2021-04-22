@@ -20,9 +20,9 @@ macro_rules! concat {
     };
 }
 impl<K: rlp::Encodable + rlp::Decodable, V: rlp::Encodable + rlp::Decodable> Store<K, V> {
-    pub fn new(s: String) -> Store<K, V> {
+    pub fn new(s: &str) -> Store<K, V> {
         Store {
-            prefix: s,
+            prefix: s.to_string(),
             phantom_0: PhantomData::default(),
             phantom_1: PhantomData::default(),
         }
@@ -43,10 +43,10 @@ impl<K: rlp::Encodable + rlp::Decodable, V: rlp::Encodable + rlp::Decodable> Sto
     }
 
 
-    pub fn insert(&self, key: &K, val: V) {
+    pub fn insert(&self, key: &K, val: &V) {
         let encoded = rlp::encode(key);
         let k = concat!(&encoded, self.prefix.as_bytes());
-        insert(&k, &rlp::encode(&val));
+        insert(&k, &rlp::encode(val));
     }
 
     pub fn remove(&self, key: &K) {

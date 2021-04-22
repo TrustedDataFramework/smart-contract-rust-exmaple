@@ -1,11 +1,19 @@
 use alloc::vec::Vec;
 use crate::remember_bytes;
+use hex::ToHex;
+use alloc::string::*;
 
 const ADDRESS_SIZE: usize = 20;
 
 #[derive(Eq)]
 pub struct Address {
     data: Vec<u8>
+}
+
+impl ToString for Address {
+    fn to_string(&self) -> String {
+        self.data.encode_hex()
+    }
 }
 
 impl Default for Address {

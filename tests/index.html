@@ -17,7 +17,7 @@
         vm.alloc(origin, 0xff + 0xff)
         async function main() {
             const contractAddress = t.getContractAddress(origin, 1)
-            await vm.deploy(origin, '../target/wasm32-unknown-unknown/debug/hello_wasm.wasm', ["0x4Ad950B0B049ac9bA9A1982758cb44C2A1e9C52D", "180000000000000000000"], 123, {
+            await vm.deploy(origin, '../target/wasm32-unknown-unknown/debug/hello_wasm.wasm', ["56"], 123, {
                 version: 1234,
                 createdAt: 12345,
                 gasLimit: 12345678,
@@ -27,8 +27,8 @@
                 hash: '9cbf30db111483e4b84e77ca0e39378fd7605e1b'
             });
 
-            await vm.call(origin, contractAddress, 'insert', ['ffff', 'ffff'])                        
-            console.log(await vm.view(contractAddress, 'get', ['ffff']))                        
+            console.log(await vm.view(contractAddress, 'getOwner'))                        
+
 
         }
         main().catch(console.error)        
